@@ -1,7 +1,5 @@
 20181206 - WF - deconstucting matlab code
-[] what protocols are given? which is TSE, which GRE
-[] how/where did the 3x3x3 smoothing happen?
-[] why does `idxT2s` start with extra (first) file index 
+ 3x3x3 resample with 3dresample okay?
 
 20181206 - Chan Moon (copied from box, git init)
 >  The codes and example (20190930) are upload to the box. The program generates T2
@@ -14,7 +12,7 @@
 >  4 Matlab, run ‘T2T2s.m’ (20190930/Processing) with appropriate editing of files and
 >   folder name
 >
->  Details are described in ‘T2T2s.m’ file. Let me know any question.
+>  Details are described in ‘T2T2s.m’ file
 
 20181203 - Bart Larsen 
 > R2' is calculated from two values, R2 and R2*, that must be estimated from their
