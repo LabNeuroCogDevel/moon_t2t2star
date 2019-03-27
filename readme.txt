@@ -1,3 +1,12 @@
+20190327 - WF
+  * runme.m
+  * r2prime_mc.m and create_t2t2star_mc.m
+    * ditch 3mm resampling
+    * motion correction and t2->t1->mni warp with fsl (mcflirt, flirt, applywarp)
+
+20190326 - WF
+ chan's code produces R2map not T2map! Maybe
+
 20181206 - WF - deconstucting matlab code
  3x3x3 resample with 3dresample okay?
 

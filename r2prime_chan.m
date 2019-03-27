@@ -107,9 +107,9 @@ T1 = clock;
 eT1T0 = etime(T1,T0);
 %save eT1T0.mat eT1T0
 disp(eT1T0);
-
-cmd=sprintf('3dcalc -a %s -b %s -expr "posval(1/a - 1/b)*notzero(a*b)" -prefix %s', ...
-            output.t2map, output.t2smap, output.r2prime);
+%*notzero(a*b)
+cmd=sprintf('3dcalc -a %s -b %s -expr "b - a" -prefix %s -overwrite', ...
+            output.t2smap, output.t2map, output.r2prime);
 if system(cmd) ~= 0, error('error running %s', cmd), end
 
 
