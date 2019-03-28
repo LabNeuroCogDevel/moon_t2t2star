@@ -57,7 +57,13 @@ d_wide <-
    select(id,vid,idx,val) %>%
    spread(vid,val)
 
-### ICC values
+### cor/ICC values
+kencor <- 
+   d_wide %>% 
+   filter(!is.na(mMR_PETDA_1+mMR_PETDA_2)) %>%
+   select(`7TBrainMech_1`,mMR_PETDA_1, mMR_PETDA_2) %>%
+   cor(method='kendall')
+
 # only for columns 7TBrainMech_1 mMR_PETDA_1 mMR_PETDA_2
 icc <- d_wide %>% select(-idx, -id) %>% ICC
 
@@ -75,6 +81,7 @@ mmr <- d_wide %>%
    lapply(function(x) x %>% select(mMR_PETDA_1,mMR_PETDA_2) %>% ICC)
 
 # show 
+print(kencor)
 print(icc$results$ICC)
 print(lapply(mmr, function(x) x$results$ICC))
 print(lapply(mmrvs7t, function(x) x$results$ICC))
