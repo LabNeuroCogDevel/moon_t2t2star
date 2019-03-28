@@ -31,7 +31,7 @@ all_t2t2s = create_t2t2star_mc(id);
 
 %% test expected output
 basedir = all_t2t2s.basedir; % where R2Prime directory is for this subject
-pfolder = fullfile(basedir,'chan_mc');
+pfolder = fullfile(basedir,'mc_mni');
 
 output.t2map = fullfile(pfolder,'TTmap.nii');
 output.m0    = fullfile(pfolder,'M0map.nii');
@@ -106,8 +106,13 @@ save_untouch_nii(image,output.r2prime);
 
 %% warp to mni using fsl's applywarp
 mprage_warp = fullfile(basedir, '../preproc/t1/mprage_warpcoef.nii.gz');
-mni_ref = fullfile(basedir,'../preproc/t1/template_brain.nii.gz');
-% TODO: make sure whe have these files
+mni_ref = fullfile(basedir,'../preproc/t1/template_brain.nii');
+% check mprage files exist -- should have existed for intial flirt  to work
+if ~exist(mprage_warp, 'file') || ~exist(mni_ref,'file')
+   error(['missing warpfile (%s) and/or template (%s)!' ...
+         'consider "pp  7TBrainMech_rest MHRest_nost_ica %s"'], ...
+         mprage_warp, mni_ref, id)
+end
 
 warp_cmd = sprintf(['applywarp -i %s' ...
       ' -r %s' ...

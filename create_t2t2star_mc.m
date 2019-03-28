@@ -16,16 +16,18 @@ function t2t2s_out = create_t2t2star_mc(id)
    if ~isempty(t2t2s_out), return, end
 
    % create directories we'll need
-   mkdir(fileparts(rawnii_path))
-   mkdir(rawnii_path)
-   mkdir(mc_path)
-
+   for d={fileparts(rawnii_path),rawnii_path, mc_path}
+      if ~exist(d{1}, 'dir'), mkdir(d{1}); end
+   end
 
    % check if we have the start
    if ~exist(rawpath,'dir'), error(rawpath, 'does not exist'); end
    dcmdirs = find_files(rawpath,'t2t2star', 1);
    ndirs = length(dcmdirs);
-   if ndirs ~= 3, error('number of t2star ndirs %d != 3 for %s', ndirs, id'), end
+   if ndirs ~= 3
+      error('number of t2star ndirs %d != 3 for %s;%s:\n\t%s',...
+            ndirs, id', rawpath, strjoin(dcmdirs,'\n\t'))
+   end
 
    % intermiate stage for raw nii (not resampled)
    havenii = find_files(rawnii_path,'nii.gz$', 0);
@@ -50,6 +52,14 @@ function t2t2s_out = create_t2t2star_mc(id)
       error('need exactly 12 t2t2star multiecho niis have %d', nnii)
    end
 
+
+   % check mprage files exist
+   mprage_bet = fullfile(mc_path,'../../preproc/t1/mprage_bet.nii.gz');
+   if ~exist(mprage_bet, 'file')
+      error(['missing mpage bet! (%s);' ...
+            'consider "pp  7TBrainMech_rest MHRest_nost_ica %s"'], ...
+            mprage_bet, id)
+   end
    %% make ts of files, motion correct, resample
    cd(mc_path)
    disp(pwd)
@@ -57,7 +67,7 @@ function t2t2s_out = create_t2t2star_mc(id)
    system(['3dTcat -prefix t2t2star_ts.nii.gz ', strjoin(nii_files, ' ')]);
    run_ni('mcflirt -in t2t2star_ts.nii.gz -out mc -refvol 0 -mats', 1);
    run_ni('bet mc mc_bet -R');
-   run_ni('flirt -in mc_bet -ref ../../preproc/t1/mprage_bet.nii.gz  -omat t2_mprage.mat -o t2_mprage.nii.gz -dof 6 -interp spline');
+   run_ni(sprintf('flirt -in mc_bet -ref %s  -omat t2_mprage.mat -o t2_mprage.nii.gz -dof 6 -interp spline', mprage_bet));
    % run_ni('3dresample -dxyz 3 3 3 -inset mc.nii -prefix mc_3mm.nii', 1)
    cd(scriptd);
 
@@ -81,10 +91,11 @@ function  out = find_mc_files(niipath)
    
    warp_mat = find_files(niipath,'t2_mprage.mat$');
    if isempty(warp_mat)
-      error('failed to create warp file t2_mprage.mat')
+      error('failed to create warp file %s, consider rm dir to try again',...
+            fullfile(niipath,'t2_mprage.mat'))
    end
 
    out.mc = mc{1};
    out.warp_mat = warp_mat{1};
-   out.basedir = niipath;
+   out.basedir = fileparts(niipath);
 end

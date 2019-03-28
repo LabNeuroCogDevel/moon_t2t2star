@@ -18,6 +18,10 @@ disp(ids_7t)
 
 %% run for all
 for id=ids_7t
-   r2prime_mc(id{1})
+   try
+      r2prime_mc(id{1});
+   catch e
+      warning('failed to run %s: %s', id{1}, e.message)
+   end
 end
 
