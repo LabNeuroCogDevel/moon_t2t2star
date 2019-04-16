@@ -61,8 +61,15 @@ d_wide <-
 kencor <- 
    d_wide %>% 
    filter(!is.na(mMR_PETDA_1+mMR_PETDA_2)) %>%
-   select(`7TBrainMech_1`,mMR_PETDA_1, mMR_PETDA_2) %>%
-   cor(method='kendall')
+   select(id,`7TBrainMech_1`,mMR_PETDA_1, mMR_PETDA_2) %>%
+   split(.,.$id) %>%
+   lapply(cor, method='kendall') 
+# put all subjects into nice df
+kencor_df <-
+   mapply(function(x,n) data.frame(x) %>% mutate(id=n, compare=colnames(x)),
+          kencor, names(kencor), SIMPLIFY=F) %>%
+   bind_rows %>%
+   na_omit
 
 # only for columns 7TBrainMech_1 mMR_PETDA_1 mMR_PETDA_2
 icc <- d_wide %>% select(-idx, -id) %>% ICC
@@ -81,7 +88,7 @@ mmr <- d_wide %>%
    lapply(function(x) x %>% select(mMR_PETDA_1,mMR_PETDA_2) %>% ICC)
 
 # show 
-print(kencor)
+print(kencor_df)
 print(icc$results$ICC)
 print(lapply(mmr, function(x) x$results$ICC))
 print(lapply(mmrvs7t, function(x) x$results$ICC))
